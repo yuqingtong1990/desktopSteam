@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="video">
+      <UniqueIdentifier>{6875901f-49ed-48f2-a6cb-ad5337205da0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio">
+      <UniqueIdentifier>{59bc8caa-36b2-45b5-a199-c7e5c3937f17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{37d4ba10-b5d9-4e11-b26c-52dd9dbaf8ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dev">
+      <UniqueIdentifier>{fc73a871-d4e8-42cf-adf9-ebd17f784ba7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="project">
+      <UniqueIdentifier>{55c61117-0ccb-470b-ab5c-699c890ec7bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="small.ico">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="livecap.ico">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>project</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>project</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\util\lc_util.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\lc_yuv.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\lc_x264.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\device\lc_device.h">
+      <Filter>dev</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\video\lc_bitmap_source.h">
+      <Filter>video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\lc_wavefile.h">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\lc_wasa_audio_cap.h">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\lc_faac.h">
+      <Filter>audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\audio\lc_audio_mix.h">
+      <Filter>audio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>project</Filter>
+    </ClCompile>
+    <ClCompile Include="livecap.cpp" />
+    <ClCompile Include="..\src\util\lc_util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\lc_yuv.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\lc_x264.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\device\lc_device.cpp">
+      <Filter>dev</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\video\lc_bitmap_source.cpp">
+      <Filter>video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\lc_wavefile.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\lc_wasa_audio_cap.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\lc_faac.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\audio\lc_audio_mix.cpp">
+      <Filter>audio</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="livecap.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
