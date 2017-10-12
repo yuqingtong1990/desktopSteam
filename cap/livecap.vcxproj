@@ -56,6 +56,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../deps/libx264/;../deps/libfaac/output/$(Configuration)/;../deps/librtmp/output/$(Configuration)/</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\deps\libx264\libx264.dll $(OutDir) /S /Y
+xcopy ..\deps\libx264\pthreadgc2.dll $(OutDir) /S /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -74,6 +78,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../deps/libx264/;../deps/libfaac/output/$(Configuration)/;../deps/librtmp/output/$(Configuration)/</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\deps\libx264\libx264.dll $(OutDir) /S /Y
+xcopy ..\deps\libx264\pthreadgc2.dll $(OutDir) /S /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="livecap.ico" />
