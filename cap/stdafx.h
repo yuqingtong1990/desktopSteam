@@ -20,5 +20,7 @@
 #include "resource.h"
 // TODO: 在此处引用程序需要的其他头文件
 
+#include <process.h>
+
 #pragma warning(disable:4244)
 #pragma warning(disable:4081)

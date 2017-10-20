@@ -1,18 +1,28 @@
-
+ï»¿
 // AACEncoderManager.cpp: implementation of the CAACEncoderManager class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
 #include "lc_faac.h"
+#include <process.h>
+
 #pragma comment(lib,"libfaac.lib")
 
 lc_faac_encoder::lc_faac_encoder()
+	:isWork_(false)
+	,hEventStop(NULL)
+	,hEventReady(NULL)
 {
-	m_nSampleRate=16000;//44100;  // ²ÉÑùÂÊ
-    m_nChannels=2;         // ÉùµÀÊý
-    m_nBits=16;      // µ¥Ñù±¾Î»Êý
-    m_nInputSamples=2048;	//×î´óÊäÈëÑù±¾Êý
-    m_nMaxOutputBytes=0;	//×î´óÊä³ö×Ö½Ú
+	hEventStop = CreateEvent(NULL,FALSE,FALSE,NULL);
+	hEventReady = CreateEvent(NULL,FALSE,FALSE,NULL);
+
+	InitializeCriticalSection(&m_PreSection); 
+	InitializeCriticalSection(&m_HaveSection);
+	m_nSampleRate=16000;//44100;  // é‡‡æ ·çŽ‡
+    m_nChannels=2;         // å£°é“æ•°
+    m_nBits=16;      // å•æ ·æœ¬ä½æ•°
+  //æœ€å¤§è¾“å…¥æ ·æœ¬æ•°
+    m_nMaxOutputBytes=0;	//æœ€å¤§è¾“å‡ºå­—èŠ‚
 	
 	m_hfaac=NULL;
     m_pfaacconf=NULL; 
@@ -25,6 +35,8 @@ lc_faac_encoder::lc_faac_encoder()
 
 lc_faac_encoder::~lc_faac_encoder()
 {
+	DeleteCriticalSection(&m_PreSection);
+	DeleteCriticalSection(&m_HaveSection);
 	Clean();
 	if(m_pfaacbuffer)
 	{
@@ -39,34 +51,115 @@ unsigned char* lc_faac_encoder::Encoder(unsigned char*indata,int inlen,int &outl
 	{
 		int nInputSamples = inlen/2;
 		outlen = faacEncEncode(m_hfaac, (int32_t*)indata, nInputSamples, m_pfaacbuffer, 4096);
-	}else
+	}
+	else
 	{
 		outlen=-1;
 	}
 	if (outlen>0)
 	{
 		return m_pfaacbuffer;
-	}else
+	}
+	else
 	{
 		return NULL;
 	}
 	return NULL;
 }
-bool lc_faac_encoder::GetInfo(unsigned char*data,int&len)
+
+PDT lc_faac_encoder::getPdt()
 {
-	memcpy(data,m_pfaacinfobuffer,m_nfaacinfosize);
-	len=m_nfaacinfosize;
-	return true;
+	AutoLock autolock(&m_HaveSection);
+	PDT pdt = m_vecHaveEncode.front();
+	m_vecHaveEncode.erase(m_vecHaveEncode.begin());
+	return pdt;
+}
+
+int64_t lc_faac_encoder::getFirstFrameTime()
+{
+	AutoLock autolock(&m_HaveSection);
+	if (m_vecHaveEncode.empty())
+	{
+		return 0;
+	}
+	else
+	{
+		return m_vecHaveEncode.front().timeTicket;
+	}
+}
+
+void lc_faac_encoder::EncoderProcess()
+{
+
+	HANDLE waitArray[2] = { hEventStop, hEventReady };
+	while (true)
+	{   
+		DWORD result = WaitForMultipleObjects(2, waitArray, FALSE, 1000); 
+		if (result == WAIT_OBJECT_0)
+		{
+			break;
+		}
+		else if (result == WAIT_OBJECT_0 + 1 || result == WAIT_TIMEOUT)
+		{
+			while(true)
+			{
+				PDT Waitpdt;
+				{
+					AutoLock autolock(&m_PreSection);
+					if (m_vecWaitEncode.empty())
+						break;
+					std::vector<PDT>::iterator it = m_vecWaitEncode.begin();
+					Waitpdt = *it;
+					m_vecWaitEncode.erase(it);
+				}
+
+				
+				void* pBuffer = NULL;
+				int szBuffer = 0;
+
+				pBuffer = Encoder((unsigned char*)Waitpdt.pbuffer,Waitpdt.buffersize,szBuffer);
+				if (szBuffer == 0)
+					continue;
+
+				PDT pdtEncode;
+				pdtEncode.buffersize = szBuffer;
+				pdtEncode.timeTicket = Waitpdt.timeTicket;
+				pdtEncode.pbuffer = malloc(szBuffer);
+				memcpy(pdtEncode.pbuffer,pBuffer,szBuffer);
+
+				//é‡Šæ”¾å†…å­˜
+				Waitpdt.release();
+				{
+					AutoLock autolock(&m_HaveSection);
+					m_vecHaveEncode.push_back(pdtEncode);
+				}
+			}
+		}  
+	}
+}
+
+
+unsigned int WINAPI lc_faac_encoder::EncodeThread(void* param)
+{
+	lc_faac_encoder* pThis = (lc_faac_encoder*)param;
+	if (pThis)
+	{
+		pThis->EncoderProcess();
+	}
+
+	return 0;
 }
 
 int lc_faac_encoder::Init(int nSampleRate, int nChannels)
 {
-	if (IsWorking())
+	if (isWork_)
 	{
 		return 0;
 	}
+
 	m_nSampleRate = nSampleRate;
 	m_nChannels = nChannels;
+	m_nMaxOutputBytes=(6144/8)*m_nChannels;	
 	m_hfaac = faacEncOpen(m_nSampleRate, m_nChannels, &m_nInputSamples, &m_nMaxOutputBytes);
 	if (m_hfaac!=NULL)
 	{	
@@ -87,6 +180,16 @@ int lc_faac_encoder::Init(int nSampleRate, int nChannels)
 	return 0;
 }
 
+void lc_faac_encoder::Start()
+{
+	CloseHandle((HANDLE)_beginthreadex(NULL, 0, &lc_faac_encoder::EncodeThread, (void*)this, 0, NULL));
+}
+
+void lc_faac_encoder::Stop()
+{
+	::SetEvent(hEventStop);
+}
+
 int lc_faac_encoder::Clean()
 {
 	if (m_hfaac!=NULL)
@@ -103,4 +206,18 @@ bool lc_faac_encoder::IsWorking(void)
 {
 	return m_hfaac!=NULL;
 }
+
+void lc_faac_encoder::AddEncoderData(const PDT& pdt)
+{
+	AutoLock autolock(&m_PreSection);
+	m_vecWaitEncode.push_back(pdt);
+	SetEvent(hEventReady);
+}
+
+lc_faac_encoder& lc_faac_encoder::get()
+{
+	static lc_faac_encoder s_instance;
+	return s_instance;
+}
+
 

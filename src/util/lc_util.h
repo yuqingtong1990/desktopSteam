@@ -15,6 +15,19 @@ bool WriteYuv(FILE* f, int32_t w, int32_t h, uint8_t * y, uint8_t * u, uint8_t *
 bool WriteYuv(FILE* f, int32_t w, int32_t h, uint8_t * yuv);
 bool SaveBitmapAsfmt(HBITMAP hBitmap, WCHAR* fmt, LPCTSTR lpFileName);
 
+typedef struct PacketDataTime
+{
+	void* pbuffer;
+	uint32_t buffersize;
+	int64_t timeTicket;
+
+	void release(){
+		free(pbuffer);
+		pbuffer = NULL;
+		buffersize = 0;
+	}
+}PDT;
+
 
 class AutoLock
 {

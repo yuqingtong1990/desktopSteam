@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "lc_faac.h"
 #include "lc_wasa_audio_cap.h"
 
 #define REFERENCE_TIME_VAL 5 * 10000000
@@ -295,12 +296,20 @@ void lc_wasa_audio_cap::CaptureLoopProc()
                     filedump_->WriteData(p, n);
                 }
 
+				//添加到编码线程
+				PDT pdt;
+				pdt.buffersize = n;
+				pdt.timeTicket=GetTickCount();
+				pdt.pbuffer = p;
+				lc_faac_encoder::get().AddEncoderData(pdt);
+
                 //回调用数据
                 if (m_pcb)
                 {
                     m_pcb(p, n, info);
                 }
-                free(p);
+				//使用完成以后释放
+                //free(p);
             }
             
         }  
@@ -315,7 +324,7 @@ void lc_wasa_audio_cap::CaptureLoopProc()
 
 WAVEFORMATEX* lc_wasa_audio_cap::getWavEformatex()
 {
-    return m_pWfex;
+	return m_pWfex;
 }
 
 bool lc_wasa_audio_cap::InitRender()

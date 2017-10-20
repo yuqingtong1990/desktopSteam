@@ -28,18 +28,35 @@ enum x264_profiles{
 class lc_x264_encoder
 {
 public:
-    lc_x264_encoder(int i_width, int i_height, int profile = profile_baseline, int csp = X264_CSP_I420);
+    lc_x264_encoder();
     ~lc_x264_encoder();
 public:
+	void Init(int i_width, int i_height, int profile = profile_baseline, int csp = X264_CSP_I420);
+	void Start();
+	void Stop();
     //±¾µØ²âÊÔº¯Êý
+	PDT getPdt();
+	int64_t getFirstFrameTime();
     void GetHeader(void** ppheader, int* pisize);
-    bool Encode(std::vector<YUV> framelst, void** frame, int* fsize);
-public:
+    bool Encodelst(std::vector<YUV> framelst, void** frames, int* fsize);
+	bool EncodeOne(const YUV& yuv, PDT& pdt);
+	void AddtoEncodeLst(const YUV& yuv);
+	void EncodeProcess();
     MemoryStream header_;
+	static lc_x264_encoder& get();
 private:
-    x264_param_t paramData;
+	static unsigned int WINAPI EncodeThread(void* param);
+private:
+	std::vector<YUV> m_vecWaitEncode;
+	std::vector<PDT> m_vecHaveEncode;
+	CRITICAL_SECTION m_HaveSection;
+	CRITICAL_SECTION m_PreSection;
+    x264_param_t paramData; 
     x264_t* x264;
     x264_picture_t* pPic_out;
     x264_picture_t* pPic_in;
+	HANDLE m_hEventStop;
+	HANDLE m_hEventReady;
+	
 };
 

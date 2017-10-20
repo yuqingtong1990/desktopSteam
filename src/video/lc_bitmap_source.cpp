@@ -39,6 +39,29 @@ lc_bitmap_destop::~lc_bitmap_destop()
     }
 }
 
+void lc_bitmap_destop::Start()
+{
+	Create();
+	CloseHandle((HANDLE)_beginthreadex(NULL, 0, &lc_bitmap_destop::CaptureThread, (void*)this, 0, NULL));
+}
+
+
+unsigned int WINAPI lc_bitmap_destop::CaptureThread(void* param)
+{
+	lc_bitmap_destop* pThis = (lc_bitmap_destop*)param;
+	if (pThis)
+	{
+		pThis->CaptureLoopProc();
+	}
+	return 0;
+}
+
+
+void lc_bitmap_destop::Stop()
+{
+	SetEvent(hEventStop);
+}
+
 void lc_bitmap_destop::Create()
 {
     src_dc_ = GetDC(NULL);
@@ -63,6 +86,29 @@ void lc_bitmap_destop::Create()
     refresh();
 }
 
+void lc_bitmap_destop::CaptureLoopProc()
+{
+	while (true)
+	{   
+		//50֡
+		DWORD result = WaitForSingleObject(hEventStop,1000/50);
+		if (result == WAIT_OBJECT_0)
+		{
+			break;
+		}
+		else if (result == WAIT_TIMEOUT)
+		{
+			refresh();
+			YUV yuv;
+			yuv.RGB2YUV((uint8_t*)rgbData(),width_,height_);
+			if (m_pcb)
+			{
+				m_pcb(yuv);
+			}	
+		}
+	}
+}
+
 void lc_bitmap_destop::refresh()
 {
     if (dst_dc_ == NULL || src_dc_ == NULL)
@@ -79,6 +125,11 @@ void* lc_bitmap_destop::rgbData()
 HBITMAP lc_bitmap_destop::getHBitmap()
 {
     return hbmp_;
+}
+
+void lc_bitmap_destop::SetCallBack(videoDateCallBack pcb)
+{
+	m_pcb = pcb;
 }
 
 // int GetEncoderClsid(const WCHAR *format, CLSID *pClsid)

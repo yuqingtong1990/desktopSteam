@@ -20,6 +20,9 @@
     <Filter Include="project">
       <UniqueIdentifier>{55c61117-0ccb-470b-ab5c-699c890ec7bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rmtp">
+      <UniqueIdentifier>{9c697809-cbb4-48a9-b625-284f6b82e02b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="small.ico">
@@ -66,12 +69,14 @@
     <ClInclude Include="..\src\audio\lc_audio_mix.h">
       <Filter>audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\rtmp\lc_rtmpSend.h">
+      <Filter>rmtp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>project</Filter>
     </ClCompile>
-    <ClCompile Include="livecap.cpp" />
     <ClCompile Include="..\src\util\lc_util.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -98,6 +103,10 @@
     </ClCompile>
     <ClCompile Include="..\src\audio\lc_audio_mix.cpp">
       <Filter>audio</Filter>
+    </ClCompile>
+    <ClCompile Include="livecap.cpp" />
+    <ClCompile Include="..\src\rtmp\lc_rtmpSend.cpp">
+      <Filter>rmtp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

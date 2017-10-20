@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <vector>
+#include "lc_util.h"
 
 extern "C"
 {
@@ -18,10 +20,20 @@ public:
 	virtual ~lc_faac_encoder();
 	int Clean();
 	int Init(int nSampleRate, int nChannels);
+	void Start();
+	void Stop();
 	unsigned char* Encoder(unsigned char* indata, int inlen, int &outlen);
+	PDT getPdt();
+	void Eraseit();
+	int64_t getFirstFrameTime();
+	void EncoderProcess();
 	bool IsWorking(void);
-	bool GetInfo(unsigned char* data,int& len);
-private:
+	void AddEncoderData(const PDT& pdt);
+	static lc_faac_encoder& get();
+private: 
+	static unsigned int WINAPI EncodeThread(void* param);
+	bool isWork_;
+	FILE* m_pFile;
     long m_nSampleRate;      // 采样率
     int m_nChannels;         // 声道数
     int m_nBits;             // 单样本位数
@@ -34,4 +46,11 @@ private:
     unsigned char* m_pfaacbuffer;
     unsigned char*m_pfaacinfobuffer;
     unsigned long m_nfaacinfosize;
+	HANDLE hEventStop;
+	HANDLE hEventReady;
+	CRITICAL_SECTION m_PreSection;
+	CRITICAL_SECTION m_HaveSection;
+
+	std::vector<PDT> m_vecWaitEncode;//待编码列表数据
+	std::vector<PDT> m_vecHaveEncode;//已完成编码数据
 };

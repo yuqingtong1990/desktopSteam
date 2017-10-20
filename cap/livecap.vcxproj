@@ -45,11 +45,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./;../src/util;../src/device;../src/audio;../src/video;../deps/libx264;../deps/libfaac/include;../deps/librtmp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../src/util;../src/device;../src/audio;../src/rtmp;../src/video;../deps/libx264;../deps/libfaac/include;../deps/librtmp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -64,12 +64,12 @@ xcopy ..\deps\libx264\pthreadgc2.dll $(OutDir) /S /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>./;../src/util;../src/device;../src/audio;../src/video;../deps/libx264;../deps/libfaac/include;../deps/librtmp</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../src/util;../src/device;../src/audio;../src/rtmp;../src/video;../deps/libx264;../deps/libfaac/include;../deps/librtmp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,6 +93,7 @@ xcopy ..\deps\libx264\pthreadgc2.dll $(OutDir) /S /Y</Command>
     <ClInclude Include="..\src\audio\lc_wasa_audio_cap.h" />
     <ClInclude Include="..\src\audio\lc_wavefile.h" />
     <ClInclude Include="..\src\device\lc_device.h" />
+    <ClInclude Include="..\src\rtmp\lc_rtmpSend.h" />
     <ClInclude Include="..\src\util\lc_util.h" />
     <ClInclude Include="..\src\video\lc_bitmap_source.h" />
     <ClInclude Include="..\src\video\lc_x264.h" />
@@ -110,6 +111,7 @@ xcopy ..\deps\libx264\pthreadgc2.dll $(OutDir) /S /Y</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\src\rtmp\lc_rtmpSend.cpp" />
     <ClCompile Include="..\src\util\lc_util.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
