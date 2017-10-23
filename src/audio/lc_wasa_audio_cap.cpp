@@ -42,6 +42,7 @@ lc_wasa_audio_cap::lc_wasa_audio_cap(DevType dev)
     ,m_devtype(dev)
     ,m_nDevIndex(-1)
     ,m_pcb(NULL)
+	,filedump_(NULL)
 {
     ::InitializeCriticalSection(&m_sectionDataCb);
     m_hCaptureReadyEvent = CreateEvent(NULL, FALSE, FALSE, NULL);

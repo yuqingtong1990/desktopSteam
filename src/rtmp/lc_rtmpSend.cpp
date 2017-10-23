@@ -475,7 +475,7 @@ lc_rtmpsend::lc_rtmpsend()
 	:bHaveSendSps_(false)
 	,video_init(AVC_NULL)
 {
-
+	hEventStop = CreateEvent(NULL,FALSE,FALSE,NULL);
 }
 
 lc_rtmpsend::~lc_rtmpsend()
@@ -485,6 +485,9 @@ lc_rtmpsend::~lc_rtmpsend()
 
 void lc_rtmpsend::Init()
 {
+	m_pRtmp = RTMP_Alloc();  
+	RTMP_Init(m_pRtmp);  
+
 	WORD version;	
 	WSADATA wsaData;  
 	version = MAKEWORD(1, 1);	
@@ -798,7 +801,8 @@ void lc_rtmpsend::SendLoopProc()
 	while (true)
 	{   
 		//50帧
-		DWORD result = WaitForSingleObject(hEventStop,20);
+		HANDLE waitArray[1] = { hEventStop };
+		DWORD result = WaitForMultipleObjects(1,waitArray,FALSE,20);
 		if (result == WAIT_OBJECT_0)
 		{
 			break;
@@ -808,9 +812,9 @@ void lc_rtmpsend::SendLoopProc()
 			int64_t audiotime = lc_faac_encoder::get().getFirstFrameTime();
 			int64_t videotime = lc_x264_encoder::get().getFirstFrameTime();
 
-			if (audiotime == 0 || videotime == 0)
+			if (audiotime == 0 && videotime == 0)
 			{
-				break;
+				continue;
 			}
 
 			//对比时间戳
@@ -827,7 +831,8 @@ void lc_rtmpsend::SendLoopProc()
 				int start_code_len = 0;
 				   if(video_init != AVC_DIR_INIT)
 				   {
-						if(get_h264_nalu_type((uint8_t*)pdtv.pbuffer, pdtv.buffersize,&start_code_len)==NALU_TYPE_SPS && video_init==AVC_NULL)
+					   uint8_t nalutype = get_h264_nalu_type((uint8_t*)pdtv.pbuffer, pdtv.buffersize,&start_code_len);
+						if(nalutype ==NALU_TYPE_SPS && video_init==AVC_NULL)
 						{ 
 							metaData.nSpsLen = pdtv.buffersize-start_code_len;
 							
@@ -835,12 +840,12 @@ void lc_rtmpsend::SendLoopProc()
 							video_init=AVC_SPS_INIT;				  
 							continue ;
 						}
-						if(get_h264_nalu_type((uint8_t*)pdtv.pbuffer, pdtv.buffersize,&start_code_len)==NALU_TYPE_SPS &&video_init==AVC_SPS_INIT){
+						if(nalutype ==NALU_TYPE_PPS &&video_init==AVC_SPS_INIT){
 							metaData.nPpsLen = pdtv.buffersize-start_code_len;
 							memcpy(metaData.Pps, (uint8_t*)(pdtv.pbuffer) + start_code_len, metaData.nPpsLen);
 							video_init=AVC_DIR_INIT;
-							unsigned int width = 0,height = 0,fps=0;
-							h264_decode_sps(metaData.Sps,metaData.nSpsLen,&width,&height,&fps);		   
+							unsigned int width = 1920,height =1080,fps=25;
+							//h264_decode_sps(metaData.Sps,metaData.nSpsLen,&width,&height,&fps);		   
 							metaData.nWidth = width;
 							metaData.nHeight = height;
 							metaData.nFrameRate = fps;			  /////  帧率估计要修改    

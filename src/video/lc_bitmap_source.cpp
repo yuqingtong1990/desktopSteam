@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <atlbase.h>
 #include "lc_bitmap_source.h"
+#include "lc_x264.h"
 
 lc_bitmap_destop::lc_bitmap_destop(int startX /*= 0*/, int startY /*= 0*/, int iWidth /*= 0*/, int iHeight /*= 0*/)
     :src_dc_(NULL)
@@ -9,6 +10,7 @@ lc_bitmap_destop::lc_bitmap_destop(int startX /*= 0*/, int startY /*= 0*/, int i
     ,width_(iWidth)
     ,height_(iHeight)
     ,bmp_buffer_(NULL)
+	,m_pcb(NULL)
 {
     ptStart.x = startX;
     ptStart.y = startY;
@@ -18,6 +20,7 @@ lc_bitmap_destop::lc_bitmap_destop(int startX /*= 0*/, int startY /*= 0*/, int i
         width_ = GetSystemMetrics(SM_CXSCREEN);
         height_ = GetSystemMetrics(SM_CYSCREEN);
     }
+	hEventStop = CreateEvent(NULL,FALSE,FALSE,NULL);
 }
 
 lc_bitmap_destop::~lc_bitmap_destop()
@@ -90,7 +93,7 @@ void lc_bitmap_destop::CaptureLoopProc()
 {
 	while (true)
 	{   
-		//50֡
+		
 		DWORD result = WaitForSingleObject(hEventStop,1000/50);
 		if (result == WAIT_OBJECT_0)
 		{
@@ -101,6 +104,7 @@ void lc_bitmap_destop::CaptureLoopProc()
 			refresh();
 			YUV yuv;
 			yuv.RGB2YUV((uint8_t*)rgbData(),width_,height_);
+			lc_x264_encoder::get().AddtoEncodeLst(yuv);
 			if (m_pcb)
 			{
 				m_pcb(yuv);

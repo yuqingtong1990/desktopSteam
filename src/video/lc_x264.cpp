@@ -67,6 +67,12 @@ void lc_x264_encoder::Init(int i_width, int i_height, int profile /*= profile_ba
 	header_.Clear();
 	for (int j = 0; j < iNal; ++j){
 		header_.Write(pNal[j].p_payload, pNal[j].i_payload);
+		PDT pdt;
+		pdt.pbuffer = malloc( pNal[j].i_payload);
+		pdt.buffersize =pNal[j].i_payload;
+		memcpy(pdt.pbuffer,pNal[j].p_payload,pNal[j].i_payload);
+		pdt.timeTicket = GetTickCount64();
+		m_vecheader.push_back(pdt);
 	}
 }
 
@@ -83,22 +89,40 @@ void lc_x264_encoder::Stop()
 PDT lc_x264_encoder::getPdt()
 {
 	AutoLock autolock(&m_HaveSection);
-	PDT pdt = m_vecHaveEncode.front();
-	m_vecHaveEncode.erase(m_vecHaveEncode.begin());
+	PDT pdt;
+	if (m_vecheader.empty())
+	{
+		pdt = m_vecHaveEncode.front();
+		m_vecHaveEncode.erase(m_vecHaveEncode.begin());
+	}
+	else
+	{
+		pdt = m_vecheader.front();	
+		m_vecheader.erase(m_vecheader.begin());
+	}
+	
 	return pdt;
 }
 
 int64_t lc_x264_encoder::getFirstFrameTime()
 {
 	AutoLock autolock(&m_HaveSection);
-	if (m_vecHaveEncode.empty())
+	if (m_vecheader.empty())
 	{
-		return 0;
+		if (m_vecHaveEncode.empty())
+		{
+			return 0;
+		}
+		else
+		{
+			m_vecHaveEncode.front().timeTicket;
+		}
 	}
 	else
 	{
-		m_vecHaveEncode.front().timeTicket;
+		m_vecheader.front().timeTicket;
 	}
+	
 }
 
 void lc_x264_encoder::GetHeader(void** ppheader, int* pisize)

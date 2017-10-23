@@ -28,7 +28,7 @@ lc_faac_encoder::lc_faac_encoder()
     m_pfaacconf=NULL; 
 
 	m_pfaacbuffer=NULL;
-	m_pfaacbuffer=(unsigned char*)malloc(4096);
+	
 
 	m_pfaacinfobuffer=NULL;//(unsigned char*)malloc(100);
 }
@@ -50,7 +50,7 @@ unsigned char* lc_faac_encoder::Encoder(unsigned char*indata,int inlen,int &outl
 	if(m_hfaac!=NULL)
 	{
 		int nInputSamples = inlen/2;
-		outlen = faacEncEncode(m_hfaac, (int32_t*)indata, nInputSamples, m_pfaacbuffer, 4096);
+		//outlen = faacEncEncode(m_hfaac, (int32_t*)indata, nInputSamples, m_pfaacbuffer, 4096);
 	}
 	else
 	{
@@ -161,6 +161,10 @@ int lc_faac_encoder::Init(int nSampleRate, int nChannels)
 	m_nChannels = nChannels;
 	m_nMaxOutputBytes=(6144/8)*m_nChannels;	
 	m_hfaac = faacEncOpen(m_nSampleRate, m_nChannels, &m_nInputSamples, &m_nMaxOutputBytes);
+
+	m_pfaacbuffer=(unsigned char*)malloc(m_nMaxOutputBytes);
+	memset(m_pfaacbuffer,0,m_nMaxOutputBytes);
+
 	if (m_hfaac!=NULL)
 	{	
 		m_pfaacconf = faacEncGetCurrentConfiguration(m_hfaac);  

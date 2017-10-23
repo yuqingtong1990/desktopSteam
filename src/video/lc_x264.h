@@ -41,12 +41,13 @@ public:
     bool Encodelst(std::vector<YUV> framelst, void** frames, int* fsize);
 	bool EncodeOne(const YUV& yuv, PDT& pdt);
 	void AddtoEncodeLst(const YUV& yuv);
-	void EncodeProcess();
+	void EncodeProcess();	
     MemoryStream header_;
 	static lc_x264_encoder& get();
 private:
 	static unsigned int WINAPI EncodeThread(void* param);
 private:
+	std::vector<PDT> m_vecheader;
 	std::vector<YUV> m_vecWaitEncode;
 	std::vector<PDT> m_vecHaveEncode;
 	CRITICAL_SECTION m_HaveSection;

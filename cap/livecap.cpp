@@ -24,6 +24,7 @@
 	//ÒôÆµ²É¼¯
 	lc_wasa_audio_cap capPlayer(Dev_Player);
 	capPlayer.Start();
+	capPlayer.Captrue(NULL);
 	//ÒôÆµ±àÂë
 	WAVEFORMATEX* fpx =  capPlayer.getWavEformatex();
 	lc_faac_encoder::get().Init(fpx->nSamplesPerSec,fpx->nChannels); 
@@ -38,8 +39,10 @@
 	lc_x264_encoder::get().Init(1920,1080);
 	lc_x264_encoder::get().Start();
 
+	lc_rtmpsend::get().Init();
+	lc_rtmpsend::get().Connect("rtmp://publish3.cdn.ucloud.com.cn/ucloud/123456");
 	lc_rtmpsend::get().Start();
-	int nFrames = 500;
+	int nFrames = 5000;
 	while (nFrames)
 	{
 		HANDLE h = CreateEvent(NULL, FALSE, FALSE, NULL);

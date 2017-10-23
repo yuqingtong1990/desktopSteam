@@ -211,7 +211,7 @@ lc_yuv_convert::lc_yuv_convert()
 
 lc_yuv_convert::~lc_yuv_convert()
 {
-	clear();
+	//clear();
 }
 
 bool lc_yuv_convert::RGB2YUV(uint8_t* rgbData, int32_t w, int32_t h)
