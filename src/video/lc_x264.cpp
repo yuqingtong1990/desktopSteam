@@ -115,12 +115,12 @@ int64_t lc_x264_encoder::getFirstFrameTime()
 		}
 		else
 		{
-			m_vecHaveEncode.front().timeTicket;
+			return m_vecHaveEncode.front().timeTicket;
 		}
 	}
 	else
 	{
-		m_vecheader.front().timeTicket;
+		return m_vecheader.front().timeTicket;
 	}
 	
 }

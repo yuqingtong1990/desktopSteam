@@ -737,7 +737,7 @@ int lc_rtmpsend::SendPacket(unsigned int nPacketType,unsigned char *data,unsigne
 	packet.m_nInfoField2 = m_pRtmp->m_stream_id;  
 	packet.m_nBodySize = size;		 
 	memcpy(packet.m_body,data,size);
-	int nRet = FALSE;
+	int nRet;
 	if (RTMP_IsConnected(m_pRtmp)){  
 		nRet = RTMP_SendPacket(m_pRtmp,&packet,TRUE); /*TRUE为放进发送队列,FALSE是不放进发送队列,直接发送*/
 	}		
@@ -818,7 +818,7 @@ void lc_rtmpsend::SendLoopProc()
 			}
 
 			//对比时间戳
-			if (audiotime >= videotime)
+			if (audiotime <= videotime)
 			{
 				//发送音频帧
 				PDT pdta = lc_faac_encoder::get().getPdt();

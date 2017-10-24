@@ -300,7 +300,7 @@ void lc_wasa_audio_cap::CaptureLoopProc()
 				//添加到编码线程
 				PDT pdt;
 				pdt.buffersize = n;
-				pdt.timeTicket=GetTickCount();
+				pdt.timeTicket= GetTickCount64();
 				pdt.pbuffer = p;
 				lc_faac_encoder::get().AddEncoderData(pdt);
 
