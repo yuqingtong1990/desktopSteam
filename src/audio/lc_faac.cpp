@@ -50,7 +50,7 @@ unsigned char* lc_faac_encoder::Encoder(unsigned char*indata,int inlen,int &outl
 	if(m_hfaac!=NULL)
 	{
 		int nInputSamples = inlen/2;
-		outlen = faacEncEncode(m_hfaac, (int32_t*)indata, nInputSamples, m_pfaacbuffer, m_nMaxOutputBytes);
+		//outlen = faacEncEncode(m_hfaac, (int32_t*)indata, nInputSamples, m_pfaacbuffer, m_nMaxOutputBytes);
 	}
 	else
 	{
