@@ -36,6 +36,7 @@ public:
 	void Stop();
     //±¾µØ²âÊÔº¯Êý
 	PDT getPdt();
+	void SetFile(FILE* f);
 	int64_t getFirstFrameTime();
     void GetHeader(void** ppheader, int* pisize);
     bool Encodelst(std::vector<YUV> framelst, void** frames, int* fsize);
@@ -47,6 +48,7 @@ public:
 private:
 	static unsigned int WINAPI EncodeThread(void* param);
 private:
+	FILE* file_;
 	std::vector<PDT> m_vecheader;
 	std::vector<YUV> m_vecWaitEncode;
 	std::vector<PDT> m_vecHaveEncode;

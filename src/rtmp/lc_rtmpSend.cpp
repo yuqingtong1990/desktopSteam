@@ -830,6 +830,8 @@ void lc_rtmpsend::SendLoopProc()
 // 			}
 // 			else
 // 			{
+			if (videotime == 0)
+				continue;
 				//发送视频帧
 				PDT pdtv = lc_x264_encoder::get().getPdt();
 				int start_code_len = 0;

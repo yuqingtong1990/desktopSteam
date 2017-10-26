@@ -5,6 +5,7 @@
 
 lc_x264_encoder::lc_x264_encoder()
     :x264(NULL)
+	,file_(NULL)
 {
 
 	m_hEventStop= CreateEvent(NULL,FALSE,FALSE,NULL);
@@ -102,6 +103,11 @@ PDT lc_x264_encoder::getPdt()
 	}
 	
 	return pdt;
+}
+
+void lc_x264_encoder::SetFile(FILE* f)
+{
+	file_ = f;
 }
 
 int64_t lc_x264_encoder::getFirstFrameTime()
@@ -231,6 +237,11 @@ bool lc_x264_encoder::EncodeOne(const YUV& yuv, PDT& pdt)
 		stream_.Seek(MemoryStream::soBegin, 0);
 		stream_.Read(pdt.pbuffer, stream_.GetSize());
 		pdt.buffersize = stream_.GetSize();
+
+		if (file_)
+		{
+			fwrite(stream_.GetBuffer(),1,stream_.GetSize(),file_);
+		}
 	}
 	return true;
 }

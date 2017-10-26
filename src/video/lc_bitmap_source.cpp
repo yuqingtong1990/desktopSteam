@@ -91,10 +91,10 @@ void lc_bitmap_destop::Create()
 
 void lc_bitmap_destop::CaptureLoopProc()
 {
+	HANDLE waitArray[1] = { hEventStop};
 	while (true)
 	{   
-		
-		DWORD result = WaitForSingleObject(hEventStop,1000/50);
+		DWORD result = WaitForMultipleObjects(1, waitArray, FALSE, 1000); 
 		if (result == WAIT_OBJECT_0)
 		{
 			break;

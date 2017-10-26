@@ -35,14 +35,17 @@
 	lc_bitmap_destop bmpDestop;
 	bmpDestop.Start();
 
+	FILE* f = NULL;
+	fopen_s(&f,"D://1.x264","wb+");
 	// ”∆µ±‡¬Î
 	lc_x264_encoder::get().Init(1920,1080);
+	lc_x264_encoder::get().SetFile(f);
 	lc_x264_encoder::get().Start();
 
 	lc_rtmpsend::get().Init();
 	lc_rtmpsend::get().Connect("rtmp://publish3.cdn.ucloud.com.cn/ucloud/123456");
 	lc_rtmpsend::get().Start();
-	int nFrames = 5000;
+	int nFrames = 100;
 	while (nFrames)
 	{
 		HANDLE h = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -54,7 +57,8 @@
 	lc_x264_encoder::get().Stop();
 	bmpDestop.Stop();
 	lc_rtmpsend::get().Stop();
-	
+	fclose(f);
+	Sleep(2000);
  	return 0;
  }
 
