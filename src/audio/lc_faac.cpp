@@ -198,7 +198,6 @@ int lc_faac_encoder::Clean()
 {
 	if (m_hfaac!=NULL)
 	{
-		//faacEncEncode(m_hfaac, NULL, 0, m_pfaacbuffer, 4096);
 		faacEncClose(m_hfaac);
 		m_hfaac=NULL;
 
